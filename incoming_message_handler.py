@@ -15,5 +15,8 @@ class IncomingMessageHandler:
         sender = params.get('From')
         recipient = params.get('To')
 
-        response = ConversationService.handle_message(body)
-        MessageSender.send_message(recipient, sender, response)
+        response = ConversationService.handle_message(sender, body)
+
+        # Swap sender and recipient because we want to send the response to the sender.
+        sender, recipient = recipient, sender
+        MessageSender.send_message(sender, recipient, response)

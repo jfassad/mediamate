@@ -1,5 +1,6 @@
 # This file defines the Flask application and its endpoints.
 
+import argparse
 import logging
 
 from flask import Flask, request, make_response
@@ -54,4 +55,8 @@ def log_request(params, request_body, content_type):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    parser = argparse.ArgumentParser(description="Flask app with optional port binding.")
+    parser.add_argument('--port', type=int, default=5000, help="Port number to bind the server to. Default is 5000.")
+    args = parser.parse_args()
+
+    app.run(host='0.0.0.0', port=args.port, debug=True)

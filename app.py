@@ -22,7 +22,7 @@ def message():
 
     IncomingMessageHandler.handle_message(params)
 
-    return processing_response()
+    return empty_response()
 
 
 def processing_response():
@@ -31,6 +31,12 @@ def processing_response():
     response.headers['Content-Type'] = 'text/plain'
     return response
 
+
+def empty_response():
+    # Create a response with 200 OK status and 'text/plain' content type
+    response = make_response('', 200)
+    response.headers['Content-Type'] = 'text/plain'
+    return response
 
 @app.errorhandler(Exception)
 def handle_exception(e):

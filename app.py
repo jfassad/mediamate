@@ -11,7 +11,7 @@ app = Flask(__name__)
 logger = logging.getLogger(__name__)
 
 
-@app.route('/chatbot/message', methods=['POST'])
+@app.route('/twilio/message', methods=['POST'])
 def receive_message():
     content_type = request.headers.get('Content-Type')
     params = request.form

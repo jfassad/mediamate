@@ -25,26 +25,26 @@ def create_conversation_chain():
     )
 
 
+def handle_conversation(sender, message):
+    if message.strip().lower() == "clear context":
+        remove_conversation()
+        return "Context cleared."
+
+    if sender not in ConversationService.conversations:
+        ConversationService.conversations[sender] = create_conversation_chain()
+
+    conversation = ConversationService.conversations[sender]
+    return conversation.predict(input=message)
+
+
+def remove_conversation(sender):
+    if sender in ConversationService.conversations:
+        conversation = ConversationService.conversations[sender]
+        conversation.memory.clear()
+        del ConversationService.conversations[sender]
+        return True
+    return False
+
+
 class ConversationService:
     conversations = dict()
-
-    @staticmethod
-    def handle_message(sender, message):
-        if message.strip().lower() == "clear context":
-            ConversationService.remove_conversation(sender)
-            return "Context cleared."
-
-        if sender not in ConversationService.conversations:
-            ConversationService.conversations[sender] = create_conversation_chain()
-
-        conversation = ConversationService.conversations[sender]
-        return conversation.predict(input=message)
-
-    @staticmethod
-    def remove_conversation(sender):
-        if sender in ConversationService.conversations:
-            conversation = ConversationService.conversations[sender]
-            conversation.memory.clear()
-            del ConversationService.conversations[sender]
-            return True
-        return False

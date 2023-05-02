@@ -7,19 +7,22 @@ from config import TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN
 
 logger = logging.getLogger(__name__)
 
+
+def send_message(sender, recipient, body):
+    try:
+        client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+
+        message = client.messages.create(
+            body=body,
+            from_=sender,
+            to=recipient
+        )
+
+        logger.debug(message.sid)
+    except Exception as e:
+        logger.error(f"Error sending message: {str(e)}")
+        raise e
+
+
 class MessageSender:
-    @staticmethod
-    def send_message(sender, recipient, body):
-        try:
-            client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-
-            message = client.messages.create(
-                body=body,
-                from_=sender,
-                to=recipient
-            )
-
-            logger.debug(message.sid)
-        except Exception as e:
-            logger.error(f"Error sending message: {str(e)}")
-            raise e
+    pass

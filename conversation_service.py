@@ -4,8 +4,9 @@
 import logging
 
 from langchain.chains import ConversationChain
-from langchain.chains.conversation.memory import ConversationEntityMemory
-from langchain.chains.conversation.prompt import ENTITY_MEMORY_CONVERSATION_TEMPLATE
+from langchain.memory import ConversationTokenBufferMemory
+# from langchain.chains.conversation.memory import ConversationEntityMemory
+# from langchain.chains.conversation.prompt import ENTITY_MEMORY_CONVERSATION_TEMPLATE
 from langchain.chat_models import ChatOpenAI
 from config import OPENAI_API_KEY
 
@@ -20,14 +21,14 @@ def create_conversation_chain():
     return ConversationChain(
         llm=llm,
         verbose=True,
-        prompt=ENTITY_MEMORY_CONVERSATION_TEMPLATE,
-        memory=ConversationEntityMemory(llm=llm)
+        # prompt=ENTITY_MEMORY_CONVERSATION_TEMPLATE,
+        memory=ConversationTokenBufferMemory(llm=llm, max_token_limit=4000)
     )
 
 
 def handle_conversation(sender, message):
     if message.strip().lower() == "clear context":
-        remove_conversation()
+        remove_conversation(sender)
         return "Context cleared."
 
     if sender not in ConversationService.conversations:

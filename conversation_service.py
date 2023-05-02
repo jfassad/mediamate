@@ -13,8 +13,7 @@ logger = logging.getLogger(__name__)
 
 llm = ChatOpenAI(temperature=0.7,
                  openai_api_key=OPENAI_API_KEY,
-                 model_name="gpt-3.5-turbo",
-                 verbose=True)
+                 model_name="gpt-3.5-turbo")
 
 
 def create_conversation_chain():

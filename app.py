@@ -4,7 +4,7 @@ import argparse
 import logging
 
 from flask import Flask, request, make_response
-from incoming_message_handler import handle_message
+from incoming_message_handler import IncomingMessageHandler
 
 app = Flask(__name__)
 
@@ -12,19 +12,20 @@ logger = logging.getLogger(__name__)
 
 
 @app.route('/chatbot/message', methods=['POST'])
-def message():
+def receive_message():
     content_type = request.headers.get('Content-Type')
     params = request.form
     request_body = request.get_data(as_text=True)
 
     log_request(params, request_body, content_type)
 
-    handle_message(params)
+    handler = IncomingMessageHandler()
+    handler.handle_message(params)
 
-    return empty_response()
+    return send_response()
 
 
-def empty_response():
+def send_response():
     response = make_response('', 200)
     response.headers['Content-Type'] = 'text/plain'
     return response

@@ -19,7 +19,7 @@ class MessageSender:
                 to=recipient
             )
 
-            logger.info(message.sid)
+            logger.debug(message.sid)
         except Exception as e:
             logger.error(f"Error sending message: {str(e)}")
             raise e

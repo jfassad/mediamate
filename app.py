@@ -8,10 +8,7 @@ from incoming_message_handler import IncomingMessageHandler
 
 app = Flask(__name__)
 
-# Set up logging
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
 
 @app.route('/chatbot/message', methods=['POST'])
 def message():
@@ -46,9 +43,9 @@ def handle_exception(e):
 
 
 def log_request(params, request_body, content_type):
-    logger.info("Received parameters:")
+    logger.debug("Received parameters:")
     for key, value in params.items():
-        logger.info(f"Parameter: {key} = {value}")
+        logger.debug(f"Parameter: {key} = {value}")
 
     logger.debug(f"Received request body: {request_body}")
     logger.debug(f"Received content-type: {content_type}")

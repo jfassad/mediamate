@@ -32,7 +32,8 @@ def empty_response():
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-    logger.error(f"{e.__class__.__name__}: {str(e)}")
+    url = request.url
+    logger.error(f"{e.__class__.__name__}: {str(e)}, URL: {url}")
     return make_response('Internal Server Error', 500)
 
 

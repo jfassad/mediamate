@@ -1,8 +1,15 @@
+# This file defines a ConversationService class that provides functionality for handling messages and maintaining conversations
+# between a user and a chatbot using the LangChain library, the ChatOpenAI model, and the ConversationChain class.
+
+import logging
+
 from langchain.chains import ConversationChain
 from langchain.chains.conversation.memory import ConversationEntityMemory
 from langchain.chains.conversation.prompt import ENTITY_MEMORY_CONVERSATION_TEMPLATE
 from langchain.chat_models import ChatOpenAI
 from config import OPENAI_API_KEY
+
+logger = logging.getLogger(__name__)
 
 llm = ChatOpenAI(temperature=0.7,
                  openai_api_key=OPENAI_API_KEY,
@@ -37,6 +44,8 @@ class ConversationService:
     @staticmethod
     def remove_conversation(sender):
         if sender in ConversationService.conversations:
+            conversation = ConversationService.conversations[sender]
+            conversation.memory.clear()
             del ConversationService.conversations[sender]
             return True
         return False

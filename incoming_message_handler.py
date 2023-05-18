@@ -1,33 +1,34 @@
-# This file defines the IncomingMessageHandler class, which processes incoming messages.
-
 import logging
 
 from conversation_service import handle_conversation
-from message_sender import send_message
-from media_processing import DownloadService, AudioConverter
+from twilio_helper import send_message
+from media_processing import transcribe_audio
 
 logger = logging.getLogger(__name__)
 
 
-class IncomingMessageHandler:
-    def __init__(self):
-        self.download_service = DownloadService()
-        self.converter = AudioConverter()
+def _handle_media_message(url):
+    return transcribe_audio(url)
 
-    def handle_message(self, params):
-        body = params.get('Body')
-        sender = params.get('From')
-        recipient = params.get('To')
-        mediaurl = params.get("MediaUrl0")
 
-        if mediaurl:
-            local_file_path = self.download_service.download_media_file(mediaurl)
-            logger.info(f"Downloaded file path: {local_file_path}")
-            output_mp3_file = self.converter.convert_to_mp3(local_file_path)
-            logger.info(f"Output MP3 file: {output_mp3_file}")
+def _handle_text_message(sender, body):
+    response = handle_conversation(sender, body)
+    return response
 
-        response = handle_conversation(sender, body)
 
-        # Swap sender and recipient because we want to send the response to the sender.
-        sender, recipient = recipient, sender
-        send_message(sender, recipient, response)
+def handle_message(params):
+    body = params.get('Body')
+    sender = params.get('From')
+    recipient = params.get('To')
+    url = params.get("MediaUrl0")
+
+    if url:
+        logger.debug(f"Processsing media message: {url}")
+        response = _handle_media_message(url)
+    else:
+        logger.debug("Processsing text message")
+        response = _handle_text_message(sender, body)
+
+    # Swap sender and recipient because we want to send the response to the sender.
+    sender, recipient = recipient, sender
+    send_message(sender, recipient, response)

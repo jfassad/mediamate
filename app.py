@@ -1,10 +1,9 @@
-# This file defines the Flask application and its endpoints.
-
 import argparse
 import logging
 
 from flask import Flask, request, make_response
-from incoming_message_handler import IncomingMessageHandler
+from incoming_message_handler import handle_message
+from twilio_helper import create_twiml_response
 
 app = Flask(__name__)
 
@@ -12,33 +11,38 @@ logger = logging.getLogger(__name__)
 
 
 @app.route('/twilio/message', methods=['POST'])
-def receive_message():
-    content_type = request.headers.get('Content-Type')
-    params = request.form
-    request_body = request.get_data(as_text=True)
+def twilio_message():
+    try:
+        content_type = request.headers.get('Content-Type')
+        params = request.form
+        request_body = request.get_data(as_text=True)
 
-    log_request(params, request_body, content_type)
+        _log_request(params, request_body, content_type)
 
-    handler = IncomingMessageHandler()
-    handler.handle_message(params)
+        handle_message(params)
 
-    return send_response()
+        return _send_response()
+    except Exception as e:
+        url = request.url
+        logger.error(f"{e.__class__.__name__}: {str(e)}, URL: {url}")
+        return send_error_response(str(e))
 
 
-def send_response():
-    response = make_response('', 200)
-    response.headers['Content-Type'] = 'text/plain'
+def _send_response(body=None):
+    twiml_response_str = create_twiml_response(body)
+    response = make_response(twiml_response_str, 200)
+    response.headers['Content-Type'] = 'application/xml'
     return response
 
 
-@app.errorhandler(Exception)
-def handle_exception(e):
-    url = request.url
-    logger.error(f"{e.__class__.__name__}: {str(e)}, URL: {url}")
-    return make_response('Internal Server Error', 500)
+def _send_error_response(error_msg):
+    twiml_response_str = create_twiml_response(f"Error: {error_msg}")
+    response = make_response(twiml_response_str, 500)
+    response.headers['Content-Type'] = 'application/xml'
+    return response
 
 
-def log_request(params, request_body, content_type):
+def _log_request(params, request_body, content_type):
     logger.debug("Received parameters:")
     for key, value in params.items():
         logger.debug(f"Parameter: {key} = {value}")

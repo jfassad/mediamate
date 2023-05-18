@@ -9,6 +9,10 @@ TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
 # OpenAI API key from https://platform.openai.com/account/api-keys
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 
+# Serper API key from https://serper.dev/api-key
+SERPER_API_KEY = os.environ["SERPER_API_KEY"]
+
+
 # Set log level to INFO
 logging.basicConfig(level=logging.INFO)
 
@@ -22,4 +26,4 @@ twilio_logger.setLevel(logging.WARNING)
 
 # Set OpenAI log level to INFO
 openai_logger = logging.getLogger('openai')
-openai_logger.setLevel(logging.INFO)
+openai_logger.setLevel(logging.DEBUG)
